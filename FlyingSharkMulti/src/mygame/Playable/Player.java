@@ -5,16 +5,23 @@
 package mygame.Playable;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.PhysicsCollisionObject;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 
 /**
  *
@@ -35,6 +42,11 @@ public class Player {
     public Float fallSpeed = 9.8f; // utilisé pour retirer la gravité
     
     Vector3f walkDirection = new Vector3f();
+    
+    Spatial missile;
+    Node rootNode;
+    BulletAppState bulletAppState;
+    AssetManager assetManager;
     //camera
     boolean left = false, right = false, up = false, down = false, higth = false;
     boolean low = false;
@@ -43,6 +55,9 @@ public class Player {
     
     public Player (AssetManager assetManager, BulletAppState bulletAppState,
             Node rootNode) {
+        this.bulletAppState = bulletAppState;
+        this.rootNode = rootNode;
+        this.assetManager = assetManager;
         this.fuelStocked = MAXFUEL;
         SphereCollisionShape capsule = new SphereCollisionShape(1f);
         character = new PlayerCollision(capsule, 1.3f);
@@ -59,6 +74,8 @@ public class Player {
         character.setPhysicsLocation(new Vector3f(-140, 15, -10));
         rootNode.attachChild(model);
         bulletAppState.getPhysicsSpace().add(character);
+        missile = assetManager.loadModel("Models/SpaceCraft/Rocket.mesh.xml");
+
     }
     
      public void actionControl(String binding, boolean value, float tpf, Camera cam) {
@@ -106,15 +123,42 @@ public class Player {
             System.out.println(" Z LOCATION:" + character.getPhysicsLocation().getZ());
             System.out.println(" --------------------------------- ");
             System.out.println(" --------------------------------- ");
+            
+            
+            Vector3f pos = character.getPhysicsLocation().clone();
+            Quaternion rot = cam.getRotation().clone();
+            Vector3f dir = rot.getRotationColumn(2);
+            
+            missile.scale(0.5f);
+            missile.rotate(0, FastMath.PI, 0);
+            missile.updateGeometricState();
+            BoundingBox box = (BoundingBox) missile.getWorldBound();
+            final Vector3f extent = box.getExtent(null);
+
+            BoxCollisionShape boxShape = new BoxCollisionShape(extent);
+
+            missile.setName("Missile");
+            missile.rotate(rot);
+            missile.setLocalTranslation(pos.addLocal(0, extent.y * 4.5f, 0));
+            missile.setLocalRotation(cam.getRotation());
+            // missile.setShadowMode(RenderQueue.ShadowMode.Cast);
+            RigidBodyControl control = new BombControl(assetManager, boxShape, 20);
+            control.setLinearVelocity(dir.mult(100));
+            control.setCollisionGroup(PhysicsCollisionObject.COLLISION_GROUP_03);
+            missile.addControl(control);
+
+
+            rootNode.attachChild(missile);
+            bulletAppState.getPhysicsSpace().add(missile);
         } else if (binding.equals("CharShoot") && !value) {
-          /*  
+           
+            /*  
         System.out.println("X = "+ character.getWalkDirection().x);
         System.out.println("Y = "+ character.getWalkDirection().y);
         System.out.println("Z = "+ character.getWalkDirection().z);*/
        /* System.out.println("currentspeed = "+ currentSpeed);
         System.out.println("fuelStocked = "+ fuelStocked);
         System.out.println("accelerate = "+ acceleRate);*/
-        
         }
     }
      
@@ -137,7 +181,6 @@ public class Player {
             System.out.println(tpf);
                 currentSpeed = Math.min(currentSpeed + (((currentSpeed+tpf)*100)/(fuelStocked*(SPEEDMAX))), acceleRate);
          //       currentSpeed = Math.min(currentSpeed + (acceleRate - currentSpeed) / (SPEEDMAX), acceleRate);
-
 
             walkDirection.addLocal(camDir);
                 fuelStocked -= currentSpeed / 300 ;
@@ -191,26 +234,5 @@ public class Player {
                 a*a+(1-a*a)*Math.cos(angle), a*b*(1-Math.cos(teta))-c*Sin, tpf,
                                             tpf, tpf, tpf,
                                             tpf, tpf, tpf));*/
-        
-        
-    }
-
-    public CharacterControl getCharacter() {
-        return character;
-    }
-
-    public void setCharacter(CharacterControl character) {
-        this.character = character;
-    }
-
-    public Node getModel() {
-        return model;
-    }
-
-    public void setModel(Node model) {
-        this.model = model;
-    }
-
-     
-      
+    }      
 }

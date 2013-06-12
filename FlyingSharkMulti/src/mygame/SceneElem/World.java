@@ -151,7 +151,6 @@ public class World {
         effect.setMaterial(mat);
 //        effect.setLocalScale(100);
         rootNode.attachChild(effect);
+    
     }
-    
-    
 }

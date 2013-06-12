@@ -194,7 +194,7 @@ public class Game extends SimpleApplication implements
     
     private void setupChaseCamera() {
         flyCam.setEnabled(false);
-        chaseCam = new ChaseCamera(cam, player.getModel(), inputManager);
+        chaseCam = new ChaseCamera(cam, player.model, inputManager);
         chaseCam.setLookAtOffset(new Vector3f(0.0f, 8.0f, 0.0f));
     }
     
@@ -221,33 +221,9 @@ public class Game extends SimpleApplication implements
         bulletg.addControl(bulletControl);
         rootNode.attachChild(bulletg);
         bulletAppState.getPhysicsSpace().add(bulletControl);
-        Vector3f pos = player.character.getPhysicsLocation().clone();
-        Quaternion rot = cam.getRotation();
-        Vector3f dir = rot.getRotationColumn(2);
 
-        Spatial missile = assetManager.loadModel("Models/SpaceCraft/Rocket.mesh.xml");
-        missile.scale(0.5f);
-        missile.rotate(0, FastMath.PI, 0);
-        missile.updateGeometricState();
 /*
-        BoundingBox box = (BoundingBox) missile.getWorldBound();
-        final Vector3f extent = box.getExtent(null);
-
-        BoxCollisionShape boxShape = new BoxCollisionShape(extent);
-
-        missile.setName("Missile");
-        missile.rotate(rot);
-        missile.setLocalTranslation(pos.addLocal(0, extent.y * 4.5f, 0));
-        missile.setLocalRotation(cam.getRotation());
-        // missile.setShadowMode(RenderQueue.ShadowMode.Cast);
-        RigidBodyControl control = new BombControl(assetManager, boxShape, 20);
-        control.setLinearVelocity(dir.mult(100));
-        control.setCollisionGroup(PhysicsCollisionObject.COLLISION_GROUP_03);
-        missile.addControl(control);
-
-
-        rootNode.attachChild(missile);
-        bulletAppState.getPhysicsSpace().add(missile);*/
+       */
     }
     
     public void collision(PhysicsCollisionEvent event) {
