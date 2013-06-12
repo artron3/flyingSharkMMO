@@ -11,59 +11,13 @@ import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
-import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.bullet.objects.PhysicsGhostObject;
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import java.io.IOException;
-
-import com.jme3.asset.AssetManager;
-import com.jme3.bullet.PhysicsSpace;
-import com.jme3.bullet.PhysicsTickListener;
-import com.jme3.bullet.collision.PhysicsCollisionEvent;
-import com.jme3.bullet.collision.PhysicsCollisionListener;
-import com.jme3.bullet.collision.PhysicsCollisionObject;
-import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.collision.shapes.SphereCollisionShape;
-import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.bullet.objects.PhysicsGhostObject;
-import com.jme3.bullet.objects.PhysicsRigidBody;
-import com.jme3.effect.ParticleEmitter;
-import com.jme3.effect.ParticleMesh;
-import com.jme3.effect.shapes.EmitterSphereShape;
-import com.jme3.export.JmeExporter;
-import com.jme3.export.JmeImporter;
-import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector3f;
-import java.io.IOException;
-import java.util.Iterator;
-
-import com.jme3.asset.AssetManager;
-import com.jme3.bullet.PhysicsSpace;
-import com.jme3.bullet.PhysicsTickListener;
-import com.jme3.bullet.collision.PhysicsCollisionEvent;
-import com.jme3.bullet.collision.PhysicsCollisionListener;
-import com.jme3.bullet.collision.PhysicsCollisionObject;
-import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
-import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.objects.PhysicsGhostObject;
-import com.jme3.bullet.objects.PhysicsRigidBody;
-import com.jme3.effect.ParticleEmitter;
-import com.jme3.effect.ParticleMesh.Type;
-import com.jme3.effect.shapes.EmitterSphereShape;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
-import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector3f;
 import java.io.IOException;
-import java.util.Iterator;
 
 
-import mygame.Playable.BombControl;
 /**
  *
  * @author cailloux

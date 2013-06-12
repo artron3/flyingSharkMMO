@@ -8,22 +8,15 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
-import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.material.Material;
-import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Matrix3f;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.Camera;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Sphere;
-import mygame.Game;
 
 /**
  *
@@ -103,7 +96,34 @@ public class PlayerOnLine {
         bulletControl.setLinearVelocity(character.getViewDirection().mult(500));
         bulletg.addControl(bulletControl);
         rootNode.attachChild(bulletg);
-        bulletAppState.getPhysicsSpace().add(bulletControl);
+        bulletAppState.getPhysicsSpace().add(bulletControl);/*
+            Vector3f pos = character.getPhysicsLocation().clone();
+            Quaternion rot = character..getRotation();
+            Vector3f dir = rot.getRotationColumn(2);
+
+            Spatial missile = assetManager.loadModel("Models/SpaceCraft/Rocket.mesh.xml");
+            missile.scale(0.5f);
+            missile.rotate(0, FastMath.PI, 0);
+            missile.updateGeometricState();
+
+            BoundingBox box = (BoundingBox) missile.getWorldBound();
+            final Vector3f extent = box.getExtent(null);
+
+            BoxCollisionShape boxShape = new BoxCollisionShape(extent);
+
+            missile.setName("Missile");
+            missile.rotate(rot);
+            missile.setLocalTranslation(pos.addLocal(0, extent.y * 4.5f, 0));
+            missile.setLocalRotation(cam.getRotation());
+            // missile.setShadowMode(RenderQueue.ShadowMode.Cast);
+            RigidBodyControl control = new BombControl(assetManager, boxShape, 20);
+            control.setLinearVelocity(dir.mult(100));
+            control.setCollisionGroup(PhysicsCollisionObject.COLLISION_GROUP_03);
+            missile.addControl(control);
+*/
+
+          //  rootNode.attachChild(missile);
+            //bulletAppState.getPhysicsSpace().add(missile);
         }
         
     }

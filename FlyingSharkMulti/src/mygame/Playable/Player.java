@@ -11,14 +11,10 @@ import com.jme3.bullet.control.CharacterControl;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Matrix3f;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Node;
-import mygame.Main;
 
 /**
  *
@@ -110,7 +106,6 @@ public class Player {
             System.out.println(" Z LOCATION:" + character.getPhysicsLocation().getZ());
             System.out.println(" --------------------------------- ");
             System.out.println(" --------------------------------- ");
-            Main main = new Main();
         } else if (binding.equals("CharShoot") && !value) {
           /*  
         System.out.println("X = "+ character.getWalkDirection().x);

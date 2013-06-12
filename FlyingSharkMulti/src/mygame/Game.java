@@ -6,48 +6,27 @@ package mygame;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
-import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.bullet.util.CollisionShapeFactory;
-import com.jme3.effect.ParticleEmitter;
-import com.jme3.effect.ParticleMesh;
-import com.jme3.effect.shapes.EmitterSphereShape;
 import com.jme3.font.BitmapText;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
-import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
-import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
-import com.jme3.post.filters.BloomFilter;
-import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
-import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
-import com.jme3.terrain.geomipmap.TerrainLodControl;
-import com.jme3.terrain.geomipmap.TerrainQuad;
-import com.jme3.terrain.heightmap.AbstractHeightMap;
-import com.jme3.terrain.heightmap.ImageBasedHeightMap;
-import com.jme3.texture.Texture;
-import com.jme3.texture.Texture2D;
-import com.jme3.ui.Picture;
-import com.jme3.util.SkyFactory;
-import java.io.Console;
 import java.util.ArrayList;
-import java.util.List;
 import mygame.GUI.GUI;
 import mygame.Playable.Player;
 import mygame.Playable.BombControl;
@@ -88,7 +67,10 @@ public class Game extends SimpleApplication implements
     Integer lastValueOilStocked =0;
     ArrayList<GUI> oilArray = new ArrayList<GUI>(10);
     BitmapText hudText; // display speed
+    
+    private ArrayList<PlayerOnLine> enemys = new ArrayList<PlayerOnLine>(30);
     float time = 0;
+    int X =0;
     
     
     @Override
@@ -105,9 +87,19 @@ public class Game extends SimpleApplication implements
         player = new Player(assetManager, bulletAppState, rootNode);
         
         enemy = new PlayerOnLine(-140, 15, 510, assetManager, bulletAppState, rootNode);
+        enemys.add(enemy);
+        enemy = new PlayerOnLine(-180, 15, 410, assetManager, bulletAppState, rootNode);
+        enemys.add(enemy);
         enemy = new PlayerOnLine(-140, 15, 410, assetManager, bulletAppState, rootNode);
-        //enemy = new PlayerOnLine(-140, 15, 310, assetManager, bulletAppState, rootNode);
+        enemys.add(enemy);
+        enemy = new PlayerOnLine(-100, 15, 620, assetManager, bulletAppState, rootNode);
+        enemys.add(enemy);
+        enemy = new PlayerOnLine(-160, 15, 380, assetManager, bulletAppState, rootNode);
+        enemys.add(enemy);
+        enemy = new PlayerOnLine(-185, 15, 550, assetManager, bulletAppState, rootNode);
+        enemys.add(enemy);
         enemy = new PlayerOnLine(-170, -135, 10, assetManager, bulletAppState, rootNode);
+        enemys.add(enemy);
         setupChaseCamera();
         guiViseur = new GUI("Interface/viseur.png",
                 4 * settings.getWidth() / 9, 7 * settings.getHeight() / 19, 1 * settings.getWidth() / 9, 2 * settings.getHeight() / 9,
@@ -149,14 +141,19 @@ public class Game extends SimpleApplication implements
         hudText.setText(Math.round(player.currentSpeed *51)+ " KM");
         
         time+=tpf;
-        if(time>1){
-            System.out.println("1111:"+time);
+        if(time>.3f){
+            X += time * 60;
             time = 0;
-            if(Math.random() < 0.3)
-                oil = new Oil(-170, 25, 28, rootNode, bulletAppState, getAssetManager());
+           // if(Math.random() < 0.3)
+                oil = new Oil(-170+X, 25, 28, rootNode, bulletAppState, getAssetManager());
         }
-        enemy.update(tpf,rootNode, bulletAppState);
-        
+            enemys.get(1).update(tpf,rootNode, bulletAppState);
+            enemys.get(2).update(tpf,rootNode, bulletAppState);
+            enemys.get(3).update(tpf,rootNode, bulletAppState);
+            enemys.get(4).update(tpf,rootNode, bulletAppState);
+            enemys.get(5).update(tpf,rootNode, bulletAppState);
+            enemys.get(6).update(tpf,rootNode, bulletAppState);
+            enemys.get(0).update(tpf,rootNode, bulletAppState);
     }
     
     @Override
@@ -224,6 +221,33 @@ public class Game extends SimpleApplication implements
         bulletg.addControl(bulletControl);
         rootNode.attachChild(bulletg);
         bulletAppState.getPhysicsSpace().add(bulletControl);
+        Vector3f pos = player.character.getPhysicsLocation().clone();
+        Quaternion rot = cam.getRotation();
+        Vector3f dir = rot.getRotationColumn(2);
+
+        Spatial missile = assetManager.loadModel("Models/SpaceCraft/Rocket.mesh.xml");
+        missile.scale(0.5f);
+        missile.rotate(0, FastMath.PI, 0);
+        missile.updateGeometricState();
+/*
+        BoundingBox box = (BoundingBox) missile.getWorldBound();
+        final Vector3f extent = box.getExtent(null);
+
+        BoxCollisionShape boxShape = new BoxCollisionShape(extent);
+
+        missile.setName("Missile");
+        missile.rotate(rot);
+        missile.setLocalTranslation(pos.addLocal(0, extent.y * 4.5f, 0));
+        missile.setLocalRotation(cam.getRotation());
+        // missile.setShadowMode(RenderQueue.ShadowMode.Cast);
+        RigidBodyControl control = new BombControl(assetManager, boxShape, 20);
+        control.setLinearVelocity(dir.mult(100));
+        control.setCollisionGroup(PhysicsCollisionObject.COLLISION_GROUP_03);
+        missile.addControl(control);
+
+
+        rootNode.attachChild(missile);
+        bulletAppState.getPhysicsSpace().add(missile);*/
     }
     
     public void collision(PhysicsCollisionEvent event) {
