@@ -17,6 +17,7 @@ import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Sphere;
+import java.util.ArrayList;
 
 /**
  *
@@ -47,6 +48,11 @@ public class PlayerOnLine {
     Sphere bullet;
     SphereCollisionShape bulletCollisionShape;
     private float time;
+    Geometry bulletg;
+    ArrayList<Geometry> bulletsGeos;
+    ArrayList<RigidBodyControl> bulletsCons;
+    RigidBodyControl bulletControl;
+    int ballsCount;
         
     public PlayerOnLine(int x, int y, int z, AssetManager assetManager, BulletAppState bulletAppState,
             Node rootNode) {
@@ -75,6 +81,14 @@ public class PlayerOnLine {
         matBullet = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         matBullet.setColor("Color", ColorRGBA.Green);
         matBullet.setColor("GlowColor", ColorRGBA.Magenta);
+        bulletsCons = new ArrayList<RigidBodyControl>(40);
+        bulletsGeos = new ArrayList<Geometry>(40);
+        for (int i = 0; i<40; ++i){
+            bulletg = new Geometry("bullet", bullet);
+            bulletsGeos.add(bulletg);
+            bulletControl = new BombControl(bulletCollisionShape, 0.1f);
+            bulletsCons.add(bulletControl);
+        }
     }
 
     
@@ -85,18 +99,18 @@ public class PlayerOnLine {
         
         if(this.time>1f && this.character.life>0){
             this.time=0f;
-        Geometry bulletg = new Geometry("bullet", bullet);
-        bulletg.setMaterial(matBullet);
-        bulletg.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
-        bulletg.setLocalTranslation(character.getPhysicsLocation().add(character.getViewDirection().mult(14)));
-        RigidBodyControl bulletControl = new BombControl(bulletCollisionShape, 0.1f);
-        bulletControl.setGravity(new Vector3f(0.0f, 0.0f, 0.001f));
-        bulletControl.setCcdMotionThreshold(0.1f);
-        bulletControl.setFriction(0f);
-        bulletControl.setLinearVelocity(character.getViewDirection().mult(500));
-        bulletg.addControl(bulletControl);
-        rootNode.attachChild(bulletg);
-        bulletAppState.getPhysicsSpace().add(bulletControl);/*
+            ++ballsCount;
+            if(ballsCount>39) ballsCount = 0;
+            bulletsGeos.get(ballsCount).setMaterial(matBullet);
+            bulletsGeos.get(ballsCount).setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
+            bulletsGeos.get(ballsCount).setLocalTranslation(character.getPhysicsLocation().add(character.getViewDirection().mult(14)));
+            bulletsCons.get(ballsCount).setGravity(new Vector3f(0.0f, 0.0f, 0.001f));
+            bulletsCons.get(ballsCount).setCcdMotionThreshold(0.1f);
+            bulletsCons.get(ballsCount).setFriction(0f);
+            bulletsCons.get(ballsCount).setLinearVelocity(character.getViewDirection().mult(500));
+            bulletsGeos.get(ballsCount).addControl(bulletsCons.get(ballsCount));
+        rootNode.attachChild(bulletsGeos.get(ballsCount));
+        bulletAppState.getPhysicsSpace().add(bulletsCons.get(ballsCount));/*
             Vector3f pos = character.getPhysicsLocation().clone();
             Quaternion rot = character..getRotation();
             Vector3f dir = rot.getRotationColumn(2);

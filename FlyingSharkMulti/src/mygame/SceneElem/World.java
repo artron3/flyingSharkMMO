@@ -29,6 +29,7 @@ import com.jme3.texture.Texture;
 import com.jme3.util.SkyFactory;
 import java.util.ArrayList;
 import java.util.List;
+import mygame.SceneElem.Element.WorldCollision;
 
 /**
  *
@@ -39,8 +40,8 @@ public class World {
     //terrain
     TerrainQuad terrain;
     TerrainQuad terrain2;
-    RigidBodyControl terrainPhysicsNode;
-    RigidBodyControl terrainPhysicsNode2;
+    WorldCollision terrainPhysicsNode;
+    WorldCollision terrainPhysicsNode2;
     Material matRock;
     public ParticleEmitter effect;
 
@@ -100,8 +101,8 @@ public class World {
         terrain2.setLocalTranslation(0, 0f, 620);
         terrain2.setLocalRotation(new Quaternion( new float[]{ 0f, 3.14f, 0f}));
 
-        terrainPhysicsNode = new RigidBodyControl(CollisionShapeFactory.createMeshShape(terrain), 0);
-        terrainPhysicsNode2 = new RigidBodyControl(CollisionShapeFactory.createMeshShape(terrain2), 0);
+        terrainPhysicsNode = new WorldCollision(CollisionShapeFactory.createMeshShape(terrain), 0);
+        terrainPhysicsNode2 = new WorldCollision(CollisionShapeFactory.createMeshShape(terrain2), 0);
         terrain.addControl(terrainPhysicsNode);
         terrain2.addControl(terrainPhysicsNode2);
         rootNode.attachChild(terrain);

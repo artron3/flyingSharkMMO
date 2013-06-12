@@ -40,11 +40,12 @@ public class Player {
     public Float MINSTALLEDSPEED = 2.5f; // vitesse min avant décrochage
     public Float currentSpeed =0f;  // vitesse actuel du joueur
     public Float fallSpeed = 9.8f; // utilisé pour retirer la gravité
+    public boolean game = false;
     
     Vector3f walkDirection = new Vector3f();
     
     Spatial missile;
-    Node rootNode;
+     Node rootNode;
     BulletAppState bulletAppState;
     AssetManager assetManager;
     //camera
@@ -71,10 +72,11 @@ public class Player {
         model.setQueueBucket(Bucket.Transparent);
         //model.setLocalScale(0.5f); make bigger/smaller model
         model.addControl(character);
-        character.setPhysicsLocation(new Vector3f(-140, 15, -10));
+        character.setPhysicsLocation(new Vector3f(-140, 5, -10));
         rootNode.attachChild(model);
         bulletAppState.getPhysicsSpace().add(character);
         missile = assetManager.loadModel("Models/SpaceCraft/Rocket.mesh.xml");
+        character.setFallSpeed(0f);
 
     }
     
@@ -96,6 +98,7 @@ public class Player {
                 up = true;
             } else {
                 up = false;
+                game = true;
             }
         } else if (binding.equals("CharDown")) {
             if (value) {
@@ -151,7 +154,10 @@ public class Player {
             rootNode.attachChild(missile);
             bulletAppState.getPhysicsSpace().add(missile);
         } else if (binding.equals("CharShoot") && !value) {
-           
+            System.out.println(character.getFallSpeed()+ " <-------");
+            System.out.println(character.getFallSpeed()+ " <-------");
+            System.out.println(character.getFallSpeed()+ " <-------");
+            System.out.println(character.getFallSpeed()+ " <-------zzzzzzzzzzzzzzzzz");
             /*  
         System.out.println("X = "+ character.getWalkDirection().x);
         System.out.println("Y = "+ character.getWalkDirection().y);
@@ -221,7 +227,7 @@ public class Player {
         }
         if(currentSpeed< MINSTALLEDSPEED){
             
-            character.setFallSpeed(0.8f);
+            character.setFallSpeed(Math.min(character.getFallSpeed() + 4f*tpf, 20f));
         }
           
       /* if(acceleRate >= MINSTALLEDSPEED &&

@@ -67,10 +67,13 @@ public class Game extends SimpleApplication implements
     Integer lastValueOilStocked =0;
     ArrayList<GUI> oilArray = new ArrayList<GUI>(10);
     BitmapText hudText; // display speed
+    ArrayList<GUI> guiRadarsPlayersPos;
     
     private ArrayList<PlayerOnLine> enemys = new ArrayList<PlayerOnLine>(30);
     float time = 0;
     int X =0;
+    int radarPosX;
+    int radarPosY;
     
     
     @Override
@@ -112,21 +115,52 @@ public class Game extends SimpleApplication implements
             oilArray.add(guiOilStocked);
         }
         guiOil = new GUI("Interface/oilGround.png",
-                1 * settings.getWidth() /12, 1 * settings.getHeight() / 12, 1 * settings.getWidth() / 9, 3 * settings.getHeight() / 9,
+                1 * settings.getWidth() / 12, 1 * settings.getHeight() / 12, 1 * settings.getWidth() / 9, 3 * settings.getHeight() / 9,
                 assetManager, settings, guiNode);
+        
+        radarPosX = settings.getWidth() - 110;
+        radarPosY = 100;
+        GUI guiRadar = new GUI("Interface/radar.png",
+                settings.getWidth() - 210, 10, 200, 200,
+                assetManager, settings, guiNode);
+        
+        guiRadarsPlayersPos = new ArrayList<GUI>(20);
+        for (int i = 0; i < (enemys.size() / 2); ++i) {
+            guiRadar = new GUI("Interface/radarEnemy.png",
+                    settings.getWidth() - 105, 80, 7, 7,
+                    assetManager, settings, guiNode);
+            guiRadarsPlayersPos.add(guiRadar);
+        }
+        for (int i = (enemys.size() / 2); i < (enemys.size() ); ++i) {
+            guiRadar = new GUI("Interface/radarAly.png",
+                    settings.getWidth() - 105, 80, 7, 7,
+                    assetManager, settings, guiNode);
+            guiRadarsPlayersPos.add(guiRadar);
+            System.out.println("i="+i);
+        }
+        guiOil = new GUI("Interface/oilGround.png",
+                1 * settings.getWidth() / 12, 1 * settings.getHeight() / 12, 1 * settings.getWidth() / 9, 3 * settings.getHeight() / 9,
+                assetManager, settings, guiNode);
+        
         
         hudText = new BitmapText(guiFont, false);
         hudText.setSize(51f);      // font size
         hudText.setColor(ColorRGBA.Blue);                             // font color
         hudText.setText("0 KM");             // the text
-        hudText.setLocalTranslation(settings.getWidth()-200, 100, 0); // position
+        hudText.setLocalTranslation(settings.getWidth()-169, 278, 0); // position
         guiNode.attachChild(hudText);
+        
+        guiRadar = new GUI("Interface/radarAly.png",
+                radarPosX-11, radarPosY-11, 20, 20,
+                assetManager, settings, guiNode);
+        guiRadarsPlayersPos.add(guiRadar);
+        player.character.setFallSpeed(0f);
         
     }
     
     @Override
     public void simpleUpdate(float tpf) {
-        if(null != cam)
+        if(null != cam && player.game)
             player.update(tpf, cam);
         
         Integer oilStocked =  Math.round(player.fuelStocked/(player.MAXFUEL/10));
@@ -144,16 +178,28 @@ public class Game extends SimpleApplication implements
         if(time>.3f){
             X += time * 60;
             time = 0;
-           // if(Math.random() < 0.3)
-                oil = new Oil(-170+X, 25, 28, rootNode, bulletAppState, getAssetManager());
+            // if(Math.random() < 0.3)
+            oil = new Oil(-170+X, 25, 28, rootNode, bulletAppState, getAssetManager());
         }
-            enemys.get(1).update(tpf,rootNode, bulletAppState);
-            enemys.get(2).update(tpf,rootNode, bulletAppState);
-            enemys.get(3).update(tpf,rootNode, bulletAppState);
-            enemys.get(4).update(tpf,rootNode, bulletAppState);
-            enemys.get(5).update(tpf,rootNode, bulletAppState);
-            enemys.get(6).update(tpf,rootNode, bulletAppState);
-            enemys.get(0).update(tpf,rootNode, bulletAppState);
+        enemys.get(1).update(tpf,rootNode, bulletAppState);
+        enemys.get(2).update(tpf,rootNode, bulletAppState);
+        enemys.get(3).update(tpf,rootNode, bulletAppState);
+        enemys.get(4).update(tpf,rootNode, bulletAppState);
+        enemys.get(5).update(tpf,rootNode, bulletAppState);
+        enemys.get(6).update(tpf,rootNode, bulletAppState);
+        enemys.get(0).update(tpf,rootNode, bulletAppState);
+        // radar
+        
+        //guiRadarsPlayersPos.get(enemys.size()).pic.setLocalRotation(cam.getRotation());
+        
+        for(int i = 0; i< enemys.size(); ++i){
+            if(enemys.get(i).character.life>0)
+            guiRadarsPlayersPos.get(i).pic.setPosition((enemys.get(i).character.getPhysicsLocation().x- player.character.getPhysicsLocation().x)/800 * 100 + radarPosX,
+                    (enemys.get(i).character.getPhysicsLocation().z - player.character.getPhysicsLocation().z) / 800 * 100 + radarPosY);
+            else
+                guiRadarsPlayersPos.get(i).pic.setPosition(-300f, -300f);
+        }
+        
     }
     
     @Override
@@ -221,9 +267,9 @@ public class Game extends SimpleApplication implements
         bulletg.addControl(bulletControl);
         rootNode.attachChild(bulletg);
         bulletAppState.getPhysicsSpace().add(bulletControl);
-
-/*
-       */
+        
+        /*
+         */
     }
     
     public void collision(PhysicsCollisionEvent event) {
