@@ -18,6 +18,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Node;
+import mygame.Main;
 
 /**
  *
@@ -26,7 +27,7 @@ import com.jme3.scene.Node;
 public class Player {
     
     //character
-    public CharacterControl character;
+    public PlayerCollision character;
     public Node model = new Node();
     public Float MAXFUEL = 1000.0f;
     String TEXTURE = "Models/HoverTank/Tank2.mesh.xml";  ///Batman.mesh.xml"; //
@@ -48,7 +49,7 @@ public class Player {
             Node rootNode) {
         this.fuelStocked = MAXFUEL;
         SphereCollisionShape capsule = new SphereCollisionShape(1f);
-        character = new CharacterControl(capsule, 1.3f);
+        character = new PlayerCollision(capsule, 1.3f);
         model = (Node) assetManager.loadModel(TEXTURE);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setTexture("ColorMap", assetManager.loadTexture("Textures/ColoredTex/Monkey.png"));
@@ -109,6 +110,7 @@ public class Player {
             System.out.println(" Z LOCATION:" + character.getPhysicsLocation().getZ());
             System.out.println(" --------------------------------- ");
             System.out.println(" --------------------------------- ");
+            Main main = new Main();
         } else if (binding.equals("CharShoot") && !value) {
           /*  
         System.out.println("X = "+ character.getWalkDirection().x);

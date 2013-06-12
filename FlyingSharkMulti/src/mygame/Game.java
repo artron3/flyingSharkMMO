@@ -56,9 +56,9 @@ import mygame.SceneElem.*;
 import mygame.SceneElem.Element.Oil;
 import mygame.SceneElem.Element.OilCollision;
 
-public class Game extends SimpleApplication implements 
+public class Game extends SimpleApplication implements
         ActionListener, PhysicsCollisionListener {
-
+    
     
     public static void main(String[] args) {
         Game app = new Game();
@@ -90,7 +90,7 @@ public class Game extends SimpleApplication implements
     BitmapText hudText; // display speed
     float time = 0;
     
-
+    
     @Override
     public void simpleInitApp() {
         bulletAppState = new BulletAppState();
@@ -99,23 +99,23 @@ public class Game extends SimpleApplication implements
         setupKeys();
         prepareBullet();
         world = new World( assetManager, bulletAppState, rootNode, getCamera(), viewPort);
-
-        Oil oil = new Oil(-170.0f, 17.1f, 28.0f, rootNode, bulletAppState, getAssetManager());  
+        
+        Oil oil = new Oil(-170.0f, 17.1f, 28.0f, rootNode, bulletAppState, getAssetManager());
         
         player = new Player(assetManager, bulletAppState, rootNode);
         
         enemy = new PlayerOnLine(-140, 15, 510, assetManager, bulletAppState, rootNode);
         enemy = new PlayerOnLine(-140, 15, 410, assetManager, bulletAppState, rootNode);
         //enemy = new PlayerOnLine(-140, 15, 310, assetManager, bulletAppState, rootNode);
-        enemy = new PlayerOnLine(-140, 15, 610, assetManager, bulletAppState, rootNode);
+        enemy = new PlayerOnLine(-170, -135, 10, assetManager, bulletAppState, rootNode);
         setupChaseCamera();
         guiViseur = new GUI("Interface/viseur.png",
                 4 * settings.getWidth() / 9, 7 * settings.getHeight() / 19, 1 * settings.getWidth() / 9, 2 * settings.getHeight() / 9,
                 assetManager, settings, guiNode);
         for (int i= 1; i<=10; ++i){
             guiOilStocked = new GUI("Interface/oil_"+i+".png",
-                1 * settings.getWidth() / 12, 1 * settings.getHeight() / 12, 1 * settings.getWidth() / 9, 3 * settings.getHeight() / 9,
-                assetManager, settings, guiNode);
+                    1 * settings.getWidth() / 12, 1 * settings.getHeight() / 12, 1 * settings.getWidth() / 9, 3 * settings.getHeight() / 9,
+                    assetManager, settings, guiNode);
             guiOilStocked.pic.setPosition(-200f, -200f);
             oilArray.add(guiOilStocked);
         }
@@ -131,11 +131,11 @@ public class Game extends SimpleApplication implements
         guiNode.attachChild(hudText);
         
     }
-
+    
     @Override
     public void simpleUpdate(float tpf) {
         if(null != cam)
-        player.update(tpf, cam);
+            player.update(tpf, cam);
         
         Integer oilStocked =  Math.round(player.fuelStocked/(player.MAXFUEL/10));
         if(lastValueOilStocked != oilStocked){
@@ -147,20 +147,18 @@ public class Game extends SimpleApplication implements
         if(oilStocked.equals(0))
             oilArray.get(0).pic.setPosition(-200f, -200f);
         hudText.setText(Math.round(player.currentSpeed *51)+ " KM");
-       
+        
         time+=tpf;
         if(time>1){
             System.out.println("1111:"+time);
             time = 0;
             if(Math.random() < 0.3)
-                  oil = new Oil(-170, 25, 28, rootNode, bulletAppState, getAssetManager()); 
-            
+                oil = new Oil(-170, 25, 28, rootNode, bulletAppState, getAssetManager());
         }
-        System.out.println("222222:"+time);
-        System.out.println(tpf);
-            
+        enemy.update(tpf,rootNode, bulletAppState);
+        
     }
-
+    
     @Override
     public void simpleRender(RenderManager rm) {
         //TODO: add render code
@@ -186,7 +184,7 @@ public class Game extends SimpleApplication implements
         inputManager.addListener(this, "CharSpace");
         inputManager.addListener(this, "CharShoot");
     }
-
+    
     private void prepareBullet() {
         bullet = new Sphere(32, 32, 0.4f, true, false);
         bullet.setTextureMode(Sphere.TextureMode.Projected);
@@ -195,39 +193,39 @@ public class Game extends SimpleApplication implements
         matBullet.setColor("Color", ColorRGBA.Green);
         matBullet.setColor("GlowColor", ColorRGBA.Magenta);
         bulletAppState.getPhysicsSpace().addCollisionListener(this);
-        System.out.println(this);
     }
-
+    
     private void setupChaseCamera() {
         flyCam.setEnabled(false);
         chaseCam = new ChaseCamera(cam, player.getModel(), inputManager);
         chaseCam.setLookAtOffset(new Vector3f(0.0f, 8.0f, 0.0f));
     }
-
+    
     public void onAction(String binding, boolean value, float tpf) {
-       if (binding.equals("CharShoot") && !value) {
+        if (binding.equals("CharShoot") && !value) {
             bulletControl();
-           // gui.pic.removeFromParent();
+            // gui.pic.removeFromParent();
         }
-       player.actionControl(binding, value, tpf, cam);
+        player.actionControl(binding, value, tpf, cam);
     }
-
+    
     private void bulletControl() {
         /*shootingChannel.setAnim("Dodge", 0.1f);
-        shootingChannel.setLoopMode(LoopMode.DontLoop);*/
+         * shootingChannel.setLoopMode(LoopMode.DontLoop);*/
         Geometry bulletg = new Geometry("bullet", bullet);
         bulletg.setMaterial(matBullet);
         bulletg.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
-        bulletg.setLocalTranslation(player.character.getPhysicsLocation().add(cam.getDirection().mult(17)));
+        bulletg.setLocalTranslation(player.character.getPhysicsLocation().add(cam.getDirection().mult(14)));
         RigidBodyControl bulletControl = new BombControl(bulletCollisionShape, 1);
         bulletControl.setGravity(new Vector3f(0.0f, 0.0f, 0.001f));
         bulletControl.setCcdMotionThreshold(0.1f);
+        bulletControl.setFriction(0f);
         bulletControl.setLinearVelocity(cam.getDirection().mult(500).add(new Vector3f(1.0f, 15.0f, 1.0f)));
         bulletg.addControl(bulletControl);
         rootNode.attachChild(bulletg);
         bulletAppState.getPhysicsSpace().add(bulletControl);
     }
-
+    
     public void collision(PhysicsCollisionEvent event) {
         if (event.getObjectA() instanceof BombControl ){
             final Spatial node = event.getNodeA();
@@ -245,17 +243,17 @@ public class Game extends SimpleApplication implements
         
         if (event.getObjectA() instanceof OilCollision) {
             if (event.getObjectB() instanceof BombControl){
-            System.out.println("DETECTED COLL3333");
-            System.out.println("DETECTED COLL3333");
-            event.getObjectA().detachDebugShape();
-            player.fuelStocked = Math.min(player.fuelStocked +150, player.MAXFUEL);
+                System.out.println("DETECTED COLL3333");
+                System.out.println("DETECTED COLL3333");
+                event.getObjectA().detachDebugShape();
+                player.fuelStocked = Math.min(player.fuelStocked +150, player.MAXFUEL);
             }
             
         }else if (event.getObjectB() instanceof OilCollision) {
             if (event.getObjectA() instanceof BombControl ){
-            System.out.println("DETECTED COLL44444444");
-            System.out.println("DETECTED COLL44444444");
-            player.fuelStocked = Math.min(player.fuelStocked + 150, player.MAXFUEL);
+                System.out.println("DETECTED COLL44444444");
+                System.out.println("DETECTED COLL44444444");
+                player.fuelStocked = Math.min(player.fuelStocked + 150, player.MAXFUEL);
             }
             
         }
