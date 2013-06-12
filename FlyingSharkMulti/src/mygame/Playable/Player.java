@@ -28,7 +28,7 @@ public class Player {
     //character
     public CharacterControl character;
     public Node model = new Node();
-    public Float MAXFUEL = 100000.0f;
+    public Float MAXFUEL = 1000.0f;
     String TEXTURE = "Models/HoverTank/Tank2.mesh.xml";  ///Batman.mesh.xml"; //
     public Float fuelStocked ;
     public Float acceleRate = 4.0f;    // vitesse du joueur
@@ -48,7 +48,7 @@ public class Player {
             Node rootNode) {
         this.fuelStocked = MAXFUEL;
         SphereCollisionShape capsule = new SphereCollisionShape(1f);
-        character = new CharacterControl(capsule, 2.1f);
+        character = new CharacterControl(capsule, 1.3f);
         model = (Node) assetManager.loadModel(TEXTURE);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setTexture("ColorMap", assetManager.loadTexture("Textures/ColoredTex/Monkey.png"));
@@ -135,16 +135,20 @@ public class Player {
             walkDirection.addLocal(camLeft.negate());
         }
         if (up) {
-                currentSpeed += tpf;
-                currentSpeed = Math.min(currentSpeed , acceleRate);
+          //      currentSpeed += tpf;
+            //    currentSpeed = Math.min(currentSpeed , acceleRate);
+            System.out.println(tpf);
+                currentSpeed = Math.min(currentSpeed + (((currentSpeed+tpf)*100)/(fuelStocked*(SPEEDMAX))), acceleRate);
+         //       currentSpeed = Math.min(currentSpeed + (acceleRate - currentSpeed) / (SPEEDMAX), acceleRate);
+
+
             walkDirection.addLocal(camDir);
-                fuelStocked -= currentSpeed / 10 ;
+                fuelStocked -= currentSpeed / 300 ;
                 if(fuelStocked<=0)
                     up = false;
         }
         else{
-            currentSpeed -= tpf;
-            currentSpeed -= tpf;
+            currentSpeed -= 1.3f*tpf;
             currentSpeed = Math.max(currentSpeed, 0f);
             if(currentSpeed> 0.4f)
             walkDirection.addLocal(camDir);

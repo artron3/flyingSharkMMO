@@ -51,6 +51,7 @@ import java.util.List;
 import mygame.GUI.GUI;
 import mygame.Playable.Player;
 import mygame.Playable.BombControl;
+import mygame.Playable.PlayerOnLine;
 import mygame.SceneElem.*;
 import mygame.SceneElem.Element.Oil;
 import mygame.SceneElem.Element.OilCollision;
@@ -64,8 +65,10 @@ public class Game extends SimpleApplication implements
         app.start();
     }
     private Player player;
+    private PlayerOnLine enemy;
     private World world;
     private  ArrayList<Oil> oils = new ArrayList<Oil>(10);
+    private Oil oil;
     
     private BulletAppState bulletAppState;
     
@@ -85,6 +88,7 @@ public class Game extends SimpleApplication implements
     Integer lastValueOilStocked =0;
     ArrayList<GUI> oilArray = new ArrayList<GUI>(10);
     BitmapText hudText; // display speed
+    float time = 0;
     
 
     @Override
@@ -99,6 +103,11 @@ public class Game extends SimpleApplication implements
         Oil oil = new Oil(-170.0f, 17.1f, 28.0f, rootNode, bulletAppState, getAssetManager());  
         
         player = new Player(assetManager, bulletAppState, rootNode);
+        
+        enemy = new PlayerOnLine(-140, 15, 510, assetManager, bulletAppState, rootNode);
+        enemy = new PlayerOnLine(-140, 15, 410, assetManager, bulletAppState, rootNode);
+        //enemy = new PlayerOnLine(-140, 15, 310, assetManager, bulletAppState, rootNode);
+        enemy = new PlayerOnLine(-140, 15, 610, assetManager, bulletAppState, rootNode);
         setupChaseCamera();
         guiViseur = new GUI("Interface/viseur.png",
                 4 * settings.getWidth() / 9, 7 * settings.getHeight() / 19, 1 * settings.getWidth() / 9, 2 * settings.getHeight() / 9,
@@ -127,10 +136,7 @@ public class Game extends SimpleApplication implements
     public void simpleUpdate(float tpf) {
         if(null != cam)
         player.update(tpf, cam);
-        else
-            System.out.println(cam.toString());
-       // if (bulletAppState.getPhysicsSpace().)
-       // guiOil.pic.setHeight(player.fuelStocked/1000 * 200);
+        
         Integer oilStocked =  Math.round(player.fuelStocked/(player.MAXFUEL/10));
         if(lastValueOilStocked != oilStocked){
             if (oilStocked != 10) {
@@ -141,6 +147,17 @@ public class Game extends SimpleApplication implements
         if(oilStocked.equals(0))
             oilArray.get(0).pic.setPosition(-200f, -200f);
         hudText.setText(Math.round(player.currentSpeed *51)+ " KM");
+       
+        time+=tpf;
+        if(time>1){
+            System.out.println("1111:"+time);
+            time = 0;
+            if(Math.random() < 0.3)
+                  oil = new Oil(-170, 25, 28, rootNode, bulletAppState, getAssetManager()); 
+            
+        }
+        System.out.println("222222:"+time);
+        System.out.println(tpf);
             
     }
 
@@ -190,9 +207,7 @@ public class Game extends SimpleApplication implements
     public void onAction(String binding, boolean value, float tpf) {
        if (binding.equals("CharShoot") && !value) {
             bulletControl();
-            Oil oil = new Oil(-170, 25, 28, rootNode, bulletAppState, getAssetManager());  
            // gui.pic.removeFromParent();
-        oils.add(oil);
         }
        player.actionControl(binding, value, tpf, cam);
     }
