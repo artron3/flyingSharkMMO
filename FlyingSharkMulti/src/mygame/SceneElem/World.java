@@ -20,13 +20,16 @@ import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.CartoonEdgeFilter;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.terrain.heightmap.AbstractHeightMap;
 import com.jme3.terrain.heightmap.ImageBasedHeightMap;
 import com.jme3.texture.Texture;
+import com.jme3.texture.Texture2D;
 import com.jme3.util.SkyFactory;
+import com.jme3.water.WaterFilter;
 import java.util.ArrayList;
 import java.util.List;
 import mygame.SceneElem.Element.WorldCollision;
@@ -44,6 +47,13 @@ public class World {
     WorldCollision terrainPhysicsNode2;
     Material matRock;
     public ParticleEmitter effect;
+    private WaterFilter water;
+    private Vector3f lightDir = new Vector3f(-4.9236743f, -1.27054665f, 5.896916f);
+    //This part is to emulate tides, slightly varrying the height of the water plane
+    private float time = 0.0f;
+    private float waterHeight = 0.0f;
+    private float initialWaterHeight = 0.8f;
+    private boolean uw = false;
 
     public World(AssetManager assetManager, BulletAppState bulletAppState,
             Node rootNode, Camera cam, ViewPort viewPort ) {
@@ -152,6 +162,30 @@ public class World {
         effect.setMaterial(mat);
 //        effect.setLocalScale(100);
         rootNode.attachChild(effect);
+        
+        //Water:
+        
+        //FilterPostProcessor fpp2 = new FilterPostProcessor(assetManager);
+        final WaterFilter water = new WaterFilter(rootNode, lightDir);
+        water.setWaterHeight(-20);
+        water.setUseFoam(false);
+        water.setUseRipples(false);
+        water.setDeepWaterColor(ColorRGBA.Brown);
+        water.setWaterColor(ColorRGBA.Brown.mult(2.0f));
+        water.setWaterTransparency(0.2f);
+        water.setMaxAmplitude(0.3f);
+        water.setWaveScale(0.008f);
+        water.setSpeed(0.7f);
+        water.setShoreHardness(1.0f);
+        water.setRefractionConstant(0.2f);
+        water.setShininess(0.3f);
+        water.setSunScale(1.0f);
+        water.setColorExtinction(new Vector3f(10.0f, 20.0f, 30.0f));
+        water.setRadius(500);
+        fpp.addFilter(water);
+        viewPort.addProcessor(fpp);
+
+
     
     }
 }

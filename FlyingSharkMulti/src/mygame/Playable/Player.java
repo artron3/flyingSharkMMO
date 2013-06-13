@@ -227,7 +227,7 @@ public class Player {
         }
         if(currentSpeed< MINSTALLEDSPEED){
             
-            character.setFallSpeed(Math.min(character.getFallSpeed() + (character.getFallSpeed()+tpf) *(tpf+ character.getFallSpeed() )/tpf, 20f));
+            character.setFallSpeed(Math.min(character.getFallSpeed() + 4f*tpf, 20f));
         }
           
       /* if(acceleRate >= MINSTALLEDSPEED &&

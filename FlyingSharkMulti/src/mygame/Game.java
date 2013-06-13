@@ -150,11 +150,14 @@ public class Game extends SimpleApplication implements
         hudText.setLocalTranslation(settings.getWidth()-169, 278, 0); // position
         guiNode.attachChild(hudText);
         
-        guiRadar = new GUI("Interface/radarAly.png",
-                radarPosX-11, radarPosY-11, 20, 20,
+        guiRadar = new GUI("Interface/radarPlayer.png",
+                radarPosX - 11, radarPosY - 11, 20, 20,
                 assetManager, settings, guiNode);
         guiRadarsPlayersPos.add(guiRadar);
-        player.character.setFallSpeed(0f);
+        guiRadar = new GUI("Interface/radarLook.png",
+                radarPosX - 11, radarPosY - 11, 8, 8,
+                assetManager, settings, guiNode);
+        guiRadarsPlayersPos.add(guiRadar);
         
     }
     
@@ -190,7 +193,10 @@ public class Game extends SimpleApplication implements
         enemys.get(0).update(tpf,rootNode, bulletAppState);
         // radar
         
-        //guiRadarsPlayersPos.get(enemys.size()).pic.setLocalRotation(cam.getRotation());
+        guiRadarsPlayersPos.get(enemys.size()).pic.setLocalRotation(new Quaternion().fromAngles(cam.getRotation().getY(), 0f, 0f));//cam.getRotation().getY()));//(new float[]{0f, 0f, //(float) Math.sin(cam.getRotation().getY() * FastMath.RAD_TO_DEG)+(float) Math.sin(cam.getRotation().getY() * FastMath.RAD_TO_DEG)} ));
+       
+        guiRadarsPlayersPos.get(enemys.size()+1).pic.setPosition(radarPosX + (float) Math.cos(cam.getDirection().x* (float) Math.PI),
+                radarPosY + (float) Math.cos(cam.getDirection().z * (float) Math.PI));
         
         for(int i = 0; i< enemys.size(); ++i){
             if(enemys.get(i).character.life>0)
