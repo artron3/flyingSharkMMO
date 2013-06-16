@@ -62,6 +62,7 @@ public class Player {
     public Player (AssetManager assetManager, BulletAppState bulletAppState,
             Node rootNode, Camera cam) {
     
+        ID= 20;
         faction =  (int) Math.random()*10000;
         this.cam = cam;
         this.bulletAppState = bulletAppState;

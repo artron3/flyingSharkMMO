@@ -36,24 +36,35 @@ public class PlayerAlex extends AbstractMessage{
         this.id = id;
         bulletsDir = new ArrayList<Vector3f>(30);
         bulletsPos = new ArrayList<Vector3f>(30);
+        pos = new Vector3f();
         direction = new Vector3f();
+
         if (null != players) {
-            if (players.size()>0){
-                if((players.size()/2) == 0){
-                    pos = new Vector3f(-140f + players.size() * 30, 5f, 10f);
+            if (players.size() > 0) {
+                if ((players.size() / 2) == 0) {
                     faction = 0;
-                } else{
-                    pos = new Vector3f(-140f + players.size() * 30, 5f, 10f);
-                    faction =1;
-                }               
-            }else{
-                pos = new Vector3f(-140f, 5f, 10f);
-                faction = id;
+                } else {
+                    faction = 1;
+                }
+            } else {
+                faction = 0;
             }
         }
-        
+
     }
+
     
+    
+        public PlayerAlex( Integer id) {
+        this.id = id;
+        bulletsDir = new ArrayList<Vector3f>(30);
+        bulletsPos = new ArrayList<Vector3f>(30);
+        pos = new Vector3f();
+        direction = new Vector3f();
+
+                faction = 0;
+   }
+        
     public PlayerAlex( Camera cam, Integer playerId) {
         this.setPos(cam.getLocation());
         this.setDirection(cam.getDirection());

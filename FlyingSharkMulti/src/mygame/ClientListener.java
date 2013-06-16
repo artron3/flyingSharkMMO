@@ -24,10 +24,12 @@ public class ClientListener implements MessageListener<Client> {
     public BulletAppState bulletAppState;
     public Player plane;
     
-    public ClientListener (ClientMain main, BulletAppState bulletAppState, Player pla) {
+    public ClientListener (ClientMain main, BulletAppState bulletAppState, 
+            Player pla) {
         this.game = main;
         this.bulletAppState = bulletAppState;
         this.plane = pla;
+        this.players = main.enemys;
     }
     
     public void messageReceived(Client source, Message message) {
@@ -60,9 +62,10 @@ public class ClientListener implements MessageListener<Client> {
                
                 for(int i=0; i< pAT.size(); ++i){
                     if(i< players.size()){
-                        if(plane.ID.equals(pAT.get(i).getId())){
+                        if(plane.ID.equals(pAT.get(i).getId()) && plane.faction>10){
                             plane.character.setPhysicsLocation(pAT.get(i).getPos());
                             plane.character.setViewDirection(pAT.get(i).getDirection());
+                            plane.faction = pAT.get(i).getFaction();
                         }else{
                         players.get(i).character.setPhysicsLocation(pAT.get(i).getPos());
                         players.get(i).character.setViewDirection(pAT.get(i).getDirection());

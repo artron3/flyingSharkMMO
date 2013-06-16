@@ -85,7 +85,7 @@ public class ClientMain extends SimpleApplication implements ClientStateListener
     ArrayList<GUI> oilArray = new ArrayList<GUI>(10);
     BitmapText hudText; // display speed
     ArrayList<GUI> guiRadarsPlayersPos;
-    private ArrayList<PlayerOnLine> enemys = new ArrayList<PlayerOnLine>(30);
+    public ArrayList<PlayerOnLine> enemys = new ArrayList<PlayerOnLine>(30);
     float time = 0;
     int X = 0;
     int radarPosX;
@@ -119,7 +119,9 @@ public class ClientMain extends SimpleApplication implements ClientStateListener
             playerAlexs = new ArrayList<PlayerAlex>(1);
             playerAlexs.add(new PlayerAlex(cam, player.ID));
             message = new HelloMessage(playerAlexs);
-     
+            
+            myClient.send(message);
+            
             enemy = new PlayerOnLine(-140, 15, 510, assetManager, bulletAppState, rootNode);
             enemys.add(enemy);
             enemy = new PlayerOnLine(-180, 15, 410, assetManager, bulletAppState, rootNode);
@@ -227,7 +229,7 @@ public class ClientMain extends SimpleApplication implements ClientStateListener
     public void simpleUpdate(float tpf) {
         try {
            playerAlexs.get(0).setCam(cam, player.ID);
-            message = (Message) new HelloMessage();
+            message = (Message) new HelloMessage(playerAlexs);
 
 
             System.out.println("::::::::   "+playerAlexs.size());

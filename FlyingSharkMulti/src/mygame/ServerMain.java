@@ -68,7 +68,7 @@ public class ServerMain extends SimpleApplication implements ConnectionListener 
     public void simpleUpdate(float tpf) {
         //TODO: add update code
         timeElapsed+=tpf;
-        if(timeElapsed>1.2f){
+        if(timeElapsed>0.65f){
             if(players != null){
                 if(players.size()>0){
                 Message msg = new HelloMessage(players);
