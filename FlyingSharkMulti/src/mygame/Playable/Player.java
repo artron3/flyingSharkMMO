@@ -22,6 +22,7 @@ import com.jme3.renderer.Camera;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import mygame.SceneElem.Element.Base;
 
 /**
  *
@@ -41,7 +42,7 @@ public class Player {
     public Float currentSpeed =0f;  // vitesse actuel du joueur
     public Float fallSpeed = 9.8f; // utilisé pour retirer la gravité
     public boolean game = false;
-    
+    public int faction ;
     Vector3f walkDirection = new Vector3f();
     
     Spatial missile;
@@ -55,7 +56,9 @@ public class Player {
     float UPSPEED = 0.25f;
     
     public Player (AssetManager assetManager, BulletAppState bulletAppState,
-            Node rootNode) {
+            Node rootNode, int fact) {
+        this.faction = fact;
+        
         this.bulletAppState = bulletAppState;
         this.rootNode = rootNode;
         this.assetManager = assetManager;
@@ -82,12 +85,17 @@ public class Player {
     
      public void actionControl(String binding, boolean value, float tpf, Camera cam) {
         if (binding.equals("CharLeft")) {
-            if (value) {
+           if (value) {
                 left = true;
             } else {
                 left = false;
             }
         } else if (binding.equals("CharRight")) {
+            System.out.println(" Y LOCATION:" + character.getPhysicsLocation().getY());
+            System.out.println(" X LOCATION:" + character.getPhysicsLocation().getX());
+            System.out.println(" Z LOCATION:" + character.getPhysicsLocation().getZ());
+            System.out.println(" --------------------------------- ");
+            System.out.println(" --------------------------------- ");
             if (value) {
                 right = true;
             } else {
@@ -101,6 +109,12 @@ public class Player {
                 game = true;
             }
         } else if (binding.equals("CharDown")) {
+            System.out.println("X = " + cam.getDirection().x);
+            System.out.println("X = " + cam.getDirection().x);
+            System.out.println("Y = " + cam.getDirection().y);
+            System.out.println("Y = " + cam.getDirection().y);
+            System.out.println("Z = " + cam.getDirection().z);
+            System.out.println("Z = " + cam.getDirection().z);
             if (value) {
                 down = true;
             } else {
@@ -154,14 +168,10 @@ public class Player {
             rootNode.attachChild(missile);
             bulletAppState.getPhysicsSpace().add(missile);
         } else if (binding.equals("CharShoot") && !value) {
-            System.out.println(character.getFallSpeed()+ " <-------");
-            System.out.println(character.getFallSpeed()+ " <-------");
-            System.out.println(character.getFallSpeed()+ " <-------");
-            System.out.println(character.getFallSpeed()+ " <-------zzzzzzzzzzzzzzzzz");
-            /*  
-        System.out.println("X = "+ character.getWalkDirection().x);
-        System.out.println("Y = "+ character.getWalkDirection().y);
-        System.out.println("Z = "+ character.getWalkDirection().z);*/
+              
+        System.out.println("X = "+ cam.getDirection().x);
+        System.out.println("Y = "+ cam.getDirection().y);
+        System.out.println("Z = "+ cam.getDirection().z);
        /* System.out.println("currentspeed = "+ currentSpeed);
         System.out.println("fuelStocked = "+ fuelStocked);
         System.out.println("accelerate = "+ acceleRate);*/
@@ -184,7 +194,6 @@ public class Player {
         if (up) {
           //      currentSpeed += tpf;
             //    currentSpeed = Math.min(currentSpeed , acceleRate);
-            System.out.println(tpf);
                 currentSpeed = Math.min(currentSpeed + (((currentSpeed+tpf)*100)/(fuelStocked*(SPEEDMAX))), acceleRate);
          //       currentSpeed = Math.min(currentSpeed + (acceleRate - currentSpeed) / (SPEEDMAX), acceleRate);
 

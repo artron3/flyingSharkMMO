@@ -11,14 +11,11 @@ import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
-import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.objects.PhysicsGhostObject;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
 import java.io.IOException;
-import mygame.Playable.BombControl;
-import mygame.Playable.PlayerCollision;
 
 /**
  *
@@ -29,7 +26,7 @@ public class WorldCollision extends RigidBodyControl implements PhysicsCollision
     private float explosionRadius = 10;
     private PhysicsGhostObject ghostObject;
     public Boolean isDestroyed = false;
-    public Integer life = 100;
+    public Integer life = 1000;
 
     public WorldCollision(CollisionShape shape, float mass) {
         super(shape, mass);

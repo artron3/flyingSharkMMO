@@ -19,7 +19,8 @@ public class GUI {
     public Picture pic;
 
 
-    public GUI(String Texture,Integer x, Integer y, Integer width, Integer  height, AssetManager assetManager, AppSettings settings, Node guiNode) {
+    public GUI(String Texture,Integer x, Integer y, Integer width, Integer  height,
+            AssetManager assetManager, AppSettings settings, Node guiNode) {
         this.TEXTURE = Texture;
         pic = new Picture("HUD Picture");
         pic.setImage(assetManager, TEXTURE, true);

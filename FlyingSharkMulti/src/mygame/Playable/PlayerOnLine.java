@@ -11,6 +11,7 @@ import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
@@ -91,7 +92,10 @@ public class PlayerOnLine {
         }
     }
 
-    
+        public void updateOnLine(Vector3f position, Vector3f dire) {
+            character.setPhysicsLocation(position);
+            character.setWalkDirection(dire);
+        }
     
     public void update(float tpf, Node rootNode, BulletAppState bulletAppState) {
         

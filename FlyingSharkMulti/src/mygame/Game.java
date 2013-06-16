@@ -5,6 +5,8 @@
 package mygame;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.asset.plugins.HttpZipLocator;
+import com.jme3.asset.plugins.ZipLocator;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
@@ -26,12 +28,14 @@ import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
+import java.io.File;
 import java.util.ArrayList;
 import mygame.GUI.GUI;
 import mygame.Playable.Player;
 import mygame.Playable.BombControl;
 import mygame.Playable.PlayerOnLine;
 import mygame.SceneElem.*;
+import mygame.SceneElem.Element.Base;
 import mygame.SceneElem.Element.Oil;
 import mygame.SceneElem.Element.OilCollision;
 
@@ -46,6 +50,8 @@ public class Game extends SimpleApplication implements
     private Player player;
     private PlayerOnLine enemy;
     private World world;
+    private Base baseAly;
+    private Base baseEnemy;
     private  ArrayList<Oil> oils = new ArrayList<Oil>(10);
     private Oil oil;
     
@@ -74,6 +80,7 @@ public class Game extends SimpleApplication implements
     int X =0;
     int radarPosX;
     int radarPosY;
+    float w ;
     
     
     @Override
@@ -81,13 +88,17 @@ public class Game extends SimpleApplication implements
         bulletAppState = new BulletAppState();
         bulletAppState.setThreadingType(BulletAppState.ThreadingType.PARALLEL);
         stateManager.attach(bulletAppState);
+        w =0;
+        
         setupKeys();
         prepareBullet();
         world = new World( assetManager, bulletAppState, rootNode, getCamera(), viewPort);
-        
+        baseAly = new Base(-100, 20, -850, assetManager, bulletAppState, rootNode);
+        baseEnemy = new Base(-100, 20, 1200, assetManager, bulletAppState, rootNode);
+ 
         Oil oil = new Oil(-170.0f, 17.1f, 28.0f, rootNode, bulletAppState, getAssetManager());
         
-        player = new Player(assetManager, bulletAppState, rootNode);
+        player = new Player(assetManager, bulletAppState, rootNode, 0);
         
         enemy = new PlayerOnLine(-140, 15, 510, assetManager, bulletAppState, rootNode);
         enemys.add(enemy);
@@ -103,13 +114,16 @@ public class Game extends SimpleApplication implements
         enemys.add(enemy);
         enemy = new PlayerOnLine(-170, -135, 10, assetManager, bulletAppState, rootNode);
         enemys.add(enemy);
+        
         setupChaseCamera();
         guiViseur = new GUI("Interface/viseur.png",
-                4 * settings.getWidth() / 9, 7 * settings.getHeight() / 19, 1 * settings.getWidth() / 9, 2 * settings.getHeight() / 9,
+                4 * settings.getWidth() / 9, 7 * settings.getHeight() / 19, 1 * settings.getWidth() / 9,
+                2 * settings.getHeight() / 9,
                 assetManager, settings, guiNode);
         for (int i= 1; i<=10; ++i){
             guiOilStocked = new GUI("Interface/oil_"+i+".png",
-                    1 * settings.getWidth() / 12, 1 * settings.getHeight() / 12, 1 * settings.getWidth() / 9, 3 * settings.getHeight() / 9,
+                    1 * settings.getWidth() / 12, 1 * settings.getHeight() / 12, 1 * settings.getWidth() / 9,
+                    3 * settings.getHeight() / 9,
                     assetManager, settings, guiNode);
             guiOilStocked.pic.setPosition(-200f, -200f);
             oilArray.add(guiOilStocked);
@@ -124,7 +138,18 @@ public class Game extends SimpleApplication implements
                 settings.getWidth() - 210, 10, 200, 200,
                 assetManager, settings, guiNode);
         
+        
         guiRadarsPlayersPos = new ArrayList<GUI>(20);
+        guiRadar = new GUI("Interface/radarAerodromAly.png",
+                settings.getWidth() - 105, 80, 30, 30,
+                assetManager, settings, guiNode);
+        guiRadarsPlayersPos.add(guiRadar);
+        guiRadar = new GUI("Interface/radarAerodromEnemy.png",
+                settings.getWidth() - 105, 80, 30, 30,
+                assetManager, settings, guiNode);
+        guiRadarsPlayersPos.add(guiRadar);
+        
+        
         for (int i = 0; i < (enemys.size() / 2); ++i) {
             guiRadar = new GUI("Interface/radarEnemy.png",
                     settings.getWidth() - 105, 80, 7, 7,
@@ -136,7 +161,6 @@ public class Game extends SimpleApplication implements
                     settings.getWidth() - 105, 80, 7, 7,
                     assetManager, settings, guiNode);
             guiRadarsPlayersPos.add(guiRadar);
-            System.out.println("i="+i);
         }
         guiOil = new GUI("Interface/oilGround.png",
                 1 * settings.getWidth() / 12, 1 * settings.getHeight() / 12, 1 * settings.getWidth() / 9, 3 * settings.getHeight() / 9,
@@ -159,6 +183,17 @@ public class Game extends SimpleApplication implements
                 assetManager, settings, guiNode);
         guiRadarsPlayersPos.add(guiRadar);
         
+        GUI guiLife;
+        guiLife = new GUI("Interface/LifeCurrent.png",
+                30, settings.getHeight() - 80, 105, 55, assetManager, settings, guiNode);
+        guiRadarsPlayersPos.add(guiLife);
+        guiLife = new GUI("Interface/LifeBackground.png",
+                30, settings.getHeight() - 80, 105, 55, assetManager, settings, guiNode);
+        System.out.println("    AIEEEEEEEEEEE");
+        System.out.println("    AIEEEEEEEEEEE");
+        System.out.println("    AIEEEEEEEEEEE");
+        System.out.println("    AIEEEEEEEEEEE");
+        System.out.println("    AIEEEEEEEEEEE");
     }
     
     @Override
@@ -193,19 +228,46 @@ public class Game extends SimpleApplication implements
         enemys.get(0).update(tpf,rootNode, bulletAppState);
         // radar
         
-        guiRadarsPlayersPos.get(enemys.size()).pic.setLocalRotation(new Quaternion().fromAngles(cam.getRotation().getY(), 0f, 0f));//cam.getRotation().getY()));//(new float[]{0f, 0f, //(float) Math.sin(cam.getRotation().getY() * FastMath.RAD_TO_DEG)+(float) Math.sin(cam.getRotation().getY() * FastMath.RAD_TO_DEG)} ));
-       
-        guiRadarsPlayersPos.get(enemys.size()+1).pic.setPosition(radarPosX + (float) Math.cos(cam.getDirection().x* (float) Math.PI),
-                radarPosY + (float) Math.cos(cam.getDirection().z * (float) Math.PI));
+        guiRadarsPlayersPos.get(0).pic.setPosition((baseAly.oilCollision2.getPhysicsLocation().x - player.character.getPhysicsLocation().x) / 800 * 100 + radarPosX,
+                (baseAly.oilCollision2.getPhysicsLocation().z - player.character.getPhysicsLocation().z) / 800 * -100 + radarPosY);
+        guiRadarsPlayersPos.get(1).pic.setPosition((baseEnemy.oilCollision2.getPhysicsLocation().x - player.character.getPhysicsLocation().x) / 800 * 100 + radarPosX,
+                (baseEnemy.oilCollision2.getPhysicsLocation().z - player.character.getPhysicsLocation().z) / 800 * -100 + radarPosY);
         
-        for(int i = 0; i< enemys.size(); ++i){
-            if(enemys.get(i).character.life>0)
-            guiRadarsPlayersPos.get(i).pic.setPosition((enemys.get(i).character.getPhysicsLocation().x- player.character.getPhysicsLocation().x)/800 * 100 + radarPosX,
-                    (enemys.get(i).character.getPhysicsLocation().z - player.character.getPhysicsLocation().z) / 800 * 100 + radarPosY);
+        w += 0.1f;
+       // while ((float)Math.abs(guiRadarsPlayersPos.get(enemys.size() + 2).pic.getLocalRotation().getZ() - (cam.getRotation()).getZ()) < 0.1f  ) {
+            System.out.println(Math.abs(guiRadarsPlayersPos.get(enemys.size() + 2).pic.getLocalRotation().getZ() - (cam.getRotation()).getZ()));
+            if (guiRadarsPlayersPos.get(enemys.size() + 2).pic.getLocalRotation().getZ() > cam.getRotation().getZ()) {
+                guiRadarsPlayersPos.get(enemys.size() + 2).pic.setLocalRotation(new Quaternion(new float[]{0f, 0f, (guiRadarsPlayersPos.get(enemys.size() + 2).pic.getLocalRotation().getZ() - (cam.getRotation()).getZ())*FastMath.PI - 1 * (float) Math.cos(cam.getDirection().getZ() * FastMath.TWO_PI) + (float) Math.cos(cam.getDirection().getX() * FastMath.TWO_PI)}));
+            }
+            else{
+                guiRadarsPlayersPos.get(enemys.size() + 2).pic.setLocalRotation(new Quaternion(new float[] {0f, 0f,-( guiRadarsPlayersPos.get(enemys.size() + 2).pic.getLocalRotation().getZ() - (cam.getRotation()).getZ())* FastMath.PI - 1 * (float) Math.cos(cam.getDirection().getZ() * FastMath.TWO_PI) + (float) Math.cos(cam.getDirection().getX() * FastMath.TWO_PI)}));
+            }
+            w+=0.1f;
+            
+
+
+        //guiRadarsPlayersPos.get(enemys.size()+2).pic.setLocalRotation(new Quaternion(new float[]{0f, 0f, w}));//-1*(float) Math.cos( cam.getDirection().getZ() *  FastMath.TWO_PI)  + (float) Math.cos(cam.getDirection().getX()  * FastMath.TWO_PI)} ));
+        
+        guiRadarsPlayersPos.get(enemys.size()+3).pic.setPosition(radarPosX + (float) Math.cos(cam.getRotation().getX()* (float) Math.PI *2),
+                radarPosY + (float) Math.cos(cam.getRotation().getZ() * (float) Math.PI*2));
+        
+        for(int i = 2; i< enemys.size()+2; ++i){
+            if(enemys.get(i-2).character.life>0)
+                guiRadarsPlayersPos.get(i).pic.setPosition((enemys.get(i-2).character.getPhysicsLocation().x- player.character.getPhysicsLocation().x)/800 * 100 + radarPosX,
+                        (enemys.get(i-2).character.getPhysicsLocation().z - player.character.getPhysicsLocation().z) / 800 * -100 + radarPosY);
             else
                 guiRadarsPlayersPos.get(i).pic.setPosition(-300f, -300f);
         }
+        guiRadarsPlayersPos.get(enemys.size() + 4).pic.setWidth(player.character.life*1.05f);
         
+        baseAly.oilCollision2.setPhysicsLocation(new Vector3f(-100, 20, -850));
+        baseEnemy.oilCollision2.setPhysicsLocation(new Vector3f(-100, 20, 1200));
+        baseAly.oilCollision2.clearForces();
+        baseEnemy.oilCollision2.clearForces();
+        System.out.println(baseEnemy);
+        System.out.println(baseAly);
+        System.out.println(baseAly.oilCollision2.getLinearVelocity());
+        System.out.println(baseAly.oilCollision2.getObjectId());
     }
     
     @Override
@@ -284,27 +346,21 @@ public class Game extends SimpleApplication implements
             world.effect.killAllParticles();
             world.effect.setLocalTranslation(node.getLocalTranslation());
             world.effect.emitAllParticles();
-            System.out.println("CCCCCC");
         } else if (event.getObjectB() instanceof BombControl) {
             final Spatial node = event.getNodeB();
             world.effect.killAllParticles();
             world.effect.setLocalTranslation(node.getLocalTranslation());
             world.effect.emitAllParticles();
-            System.out.println("BBBBBBBB");
         }
         
         if (event.getObjectA() instanceof OilCollision) {
             if (event.getObjectB() instanceof BombControl){
-                System.out.println("DETECTED COLL3333");
-                System.out.println("DETECTED COLL3333");
                 event.getObjectA().detachDebugShape();
                 player.fuelStocked = Math.min(player.fuelStocked +150, player.MAXFUEL);
             }
             
         }else if (event.getObjectB() instanceof OilCollision) {
             if (event.getObjectA() instanceof BombControl ){
-                System.out.println("DETECTED COLL44444444");
-                System.out.println("DETECTED COLL44444444");
                 player.fuelStocked = Math.min(player.fuelStocked + 150, player.MAXFUEL);
             }
             

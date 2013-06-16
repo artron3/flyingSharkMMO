@@ -6,6 +6,8 @@ package mygame.SceneElem;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
+import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.effect.ParticleEmitter;
@@ -13,6 +15,7 @@ import com.jme3.effect.ParticleMesh;
 import com.jme3.effect.shapes.EmitterSphereShape;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
+import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -21,7 +24,11 @@ import com.jme3.post.filters.CartoonEdgeFilter;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.PQTorus;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.terrain.heightmap.AbstractHeightMap;
@@ -32,6 +39,8 @@ import com.jme3.util.SkyFactory;
 import com.jme3.water.WaterFilter;
 import java.util.ArrayList;
 import java.util.List;
+import mygame.Playable.PlayerCollision;
+import mygame.SceneElem.Element.OilCollision;
 import mygame.SceneElem.Element.WorldCollision;
 
 /**
@@ -100,6 +109,14 @@ public class World {
         terrain.addControl(control);
         terrain.setMaterial(matRock);
         terrain.setLocalScale(new Vector3f(1, 1, 1));
+        
+        
+       // terrain = new TerrainQuad("terrain", 65, 513, heightmap.getHeightMap());
+        Spatial scene = assetManager.loadModel("Interface/main.scene");
+        scene.setLocalTranslation(650, 150, -0);
+//        scene.addControl(control);
+        rootNode.attachChild(scene);
+        //bulletAppState.getPhysicsSpace().add((Object) control);
         
         
         terrain2 = new TerrainQuad("terrain2", 65, 513, heightmap.getHeightMap());
@@ -180,12 +197,11 @@ public class World {
         water.setRefractionConstant(0.2f);
         water.setShininess(0.3f);
         water.setSunScale(1.0f);
-        water.setColorExtinction(new Vector3f(10.0f, 20.0f, 30.0f));
+        water.setColorExtinction(new Vector3f(10.0f,100.0f, 30.0f));
         water.setRadius(500);
         fpp.addFilter(water);
         viewPort.addProcessor(fpp);
 
-
-    
+     
     }
 }
