@@ -69,14 +69,14 @@ public class PlayerCollision extends CharacterControl implements PhysicsCollisio
         }
         if (event.getObjectA() == this) {
             if (event.getObjectB() instanceof WorldCollision) {
-                if(this.fallSpeed> 8.3f && this.fallSpeed < 21f){
+                if(this.fallSpeed> 7.9f && this.fallSpeed < 21f){
                     this.life -= 100;
                 }else
                     this.setFallSpeed(0f);
             }
         } else if (event.getObjectB() == this) {
             if (event.getObjectA() instanceof WorldCollision) {
-                if (this.fallSpeed > 8.3f && this.fallSpeed < 21f) {
+                if (this.fallSpeed > 7.9f && this.fallSpeed < 21f) {
                     this.life -= 100;
                 } else
                     this.setFallSpeed(0f);

@@ -90,6 +90,7 @@ public class PlayerOnLine {
             bulletControl = new BombControl(bulletCollisionShape, 0.1f);
             bulletsCons.add(bulletControl);
         }
+        character.setFallSpeed(0f);
     }
 
         public void updateOnLine(Vector3f position, Vector3f dire) {

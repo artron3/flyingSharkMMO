@@ -6,10 +6,12 @@ import com.jme3.math.Vector3f;
 import com.jme3.network.AbstractMessage;
 import com.jme3.network.serializing.Serializable;
 import com.jme3.network.serializing.serializers.Vector3Serializer;
+import com.jme3.renderer.Camera;
 import mygame.Faction;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import mygame.Playable.Player;
 
 /**
  * Created with IntelliJ IDEA.
@@ -46,10 +48,27 @@ public class PlayerAlex extends AbstractMessage{
                 }               
             }else{
                 pos = new Vector3f(-140f, 5f, 10f);
-                faction = 0;
+                faction = id;
             }
         }
         
+    }
+    
+    public PlayerAlex( Camera cam, Integer playerId) {
+        this.setPos(cam.getLocation());
+        this.setDirection(cam.getDirection());
+        bulletsDir = new ArrayList<Vector3f>(30);
+        bulletsPos = new ArrayList<Vector3f>(30);
+        this.id = playerId;
+    }
+    
+    public void setCam(Camera cam, Integer playerId){
+        
+        this.setPos(cam.getLocation());
+        this.setDirection(cam.getDirection());
+        bulletsDir = new ArrayList<Vector3f>(30);
+        bulletsPos = new ArrayList<Vector3f>(30);
+        this.id = playerId;
     }
 
     

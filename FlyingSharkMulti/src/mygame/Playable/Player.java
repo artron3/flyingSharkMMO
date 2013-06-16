@@ -22,6 +22,7 @@ import com.jme3.renderer.Camera;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import mygame.PlayerAlex;
 import mygame.SceneElem.Element.Base;
 
 /**
@@ -44,6 +45,7 @@ public class Player {
     public boolean game = false;
     public int faction ;
     Vector3f walkDirection = new Vector3f();
+    public Integer ID;
     
     Spatial missile;
      Node rootNode;
@@ -52,13 +54,16 @@ public class Player {
     //camera
     boolean left = false, right = false, up = false, down = false, higth = false;
     boolean low = false;
+    boolean isInit = false;
+    Camera cam;
     
     float UPSPEED = 0.25f;
     
     public Player (AssetManager assetManager, BulletAppState bulletAppState,
-            Node rootNode, int fact) {
-        this.faction = fact;
-        
+            Node rootNode, Camera cam) {
+    
+        faction =  (int) Math.random()*10000;
+        this.cam = cam;
         this.bulletAppState = bulletAppState;
         this.rootNode = rootNode;
         this.assetManager = assetManager;
@@ -81,6 +86,15 @@ public class Player {
         missile = assetManager.loadModel("Models/SpaceCraft/Rocket.mesh.xml");
         character.setFallSpeed(0f);
 
+    }
+    
+    public void updateServ(PlayerAlex alex){
+        if (!isInit){
+            character.setPhysicsLocation(alex.getPos());
+            character.setViewDirection(alex.getDirection());
+            faction = alex.getFaction();
+            isInit = true;
+        }
     }
     
      public void actionControl(String binding, boolean value, float tpf, Camera cam) {
@@ -178,7 +192,7 @@ public class Player {
         }
     }
      
-      public void update(float tpf, Camera cam) {
+      public void update(float tpf) {
         
         Vector3f camDir = cam.getDirection().clone().multLocal(0.1f);
         Vector3f camLeft = cam.getLeft().clone().multLocal(0.1f);

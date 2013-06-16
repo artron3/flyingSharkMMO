@@ -34,8 +34,10 @@ public class ServerMain extends SimpleApplication implements ConnectionListener 
     }
     private Server myServer;
     private HashMap<Integer, PlayerAlex> conneInfo;
-    private ArrayList<PlayerAlex> players;
+    public ArrayList<PlayerAlex> players;
+    private ArrayList<Integer> ids;
     private float timeElapsed;
+    private ServerListener serverListener;
     int count=0;
 
     @Override
@@ -43,6 +45,7 @@ public class ServerMain extends SimpleApplication implements ConnectionListener 
         try {
             timeElapsed =0f;
             count =0;
+            serverListener = new ServerListener(this);
             conneInfo = new HashMap<Integer, PlayerAlex>(4);
             players = new ArrayList<PlayerAlex>(4);
           myServer = Network.createServer(8000);
@@ -53,7 +56,7 @@ public class ServerMain extends SimpleApplication implements ConnectionListener 
             Serializer.registerClass(PlayerAlex.class);
             Serializer.registerClass(HelloMessage.class);
             System.out.println("classe serialized");
-         myServer.addMessageListener(new ServerListener(), HelloMessage.class);
+         myServer.addMessageListener(serverListener, HelloMessage.class);
             
         } catch (IOException ex) {
             System.out.println("PROBLEEEEEEEEEEEEEEM");
@@ -65,10 +68,11 @@ public class ServerMain extends SimpleApplication implements ConnectionListener 
     public void simpleUpdate(float tpf) {
         //TODO: add update code
         timeElapsed+=tpf;
-        if(timeElapsed>0.48f){
+        if(timeElapsed>1.2f){
             if(players != null){
                 if(players.size()>0){
                 Message msg = new HelloMessage(players);
+                msg.setReliable(true);
                 myServer.broadcast(msg);
             }
         }
@@ -91,12 +95,15 @@ public class ServerMain extends SimpleApplication implements ConnectionListener 
 
     public void connectionAdded(Server server, HostedConnection conn) {
        
-       // if (!conneInfo.containsKey(conn.getId())){
-        //    conneInfo.put(conn.getId(), new PlayerAlex(players, conn.getId()));
+        if (!conneInfo.containsKey(conn.getId())){
+            
+           // if(conn.)
+          //  server.
+          /*  conneInfo.put(conn.getId(), new PlayerAlex(players, conn.getId()));
             players.add(new PlayerAlex(players, conn.getId()));
-       // }
-        System.out.println("connection added" + count);
-        ++count;
+            ++count;*/
+        }
+        System.out.println("connection added" + count+". ID : "+conn.getId());
     }
 
     public void connectionRemoved(Server server, HostedConnection conn) {

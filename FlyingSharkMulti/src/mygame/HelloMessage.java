@@ -17,14 +17,18 @@ import java.util.ArrayList;
 @Serializable
 public class HelloMessage extends AbstractMessage {
    
-  private String hello;       // custom message data
   private ArrayList<PlayerAlex> players;
   
   public HelloMessage() {}    // empty constructor
 
-  public HelloMessage(ArrayList<PlayerAlex> players2) { 
-      this.players = players2; 
-  }
+    public HelloMessage(ArrayList<PlayerAlex> players2) {
+        this.players = players2;
+    }
+
+    public HelloMessage(PlayerAlex players2) {
+        this.players = new ArrayList<PlayerAlex>(1);
+        this.players.add(players2);
+    }
 
     public ArrayList<PlayerAlex> getPlayers() {
         return players;
@@ -32,6 +36,9 @@ public class HelloMessage extends AbstractMessage {
 
     public void setPlayers(ArrayList<PlayerAlex> players) {
         this.players = players;
+    }
+    public void UpdtAl(ArrayList<PlayerAlex> players2){
+        this.players = players2;
     }
 
 }

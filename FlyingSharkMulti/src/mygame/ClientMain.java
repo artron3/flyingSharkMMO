@@ -22,7 +22,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.network.Client;
 import com.jme3.network.ClientStateListener;
-import com.jme3.network.Message;
+import com.jme3.network.*;
 import com.jme3.network.Network;
 import com.jme3.network.serializing.Serializer;
 import com.jme3.post.FilterPostProcessor;
@@ -67,6 +67,10 @@ public class ClientMain extends SimpleApplication implements ClientStateListener
     private Oil oil;
     private BulletAppState bulletAppState;
     ChaseCamera chaseCam;
+    private ArrayList<PlayerAlex> playerAlexs = new ArrayList<PlayerAlex>(1);
+    private PlayerAlex alex;
+    
+    ClientListener clientListener;
     //bullet
     Sphere bullet;
     SphereCollisionShape bulletCollisionShape;
@@ -86,25 +90,13 @@ public class ClientMain extends SimpleApplication implements ClientStateListener
     int X = 0;
     int radarPosX;
     int radarPosY;
-    float w;
-    
+    Message message;
     @Override
     public void simpleInitApp() {
         try {
-            myClient = Network.connectToServer("localhost", 8000);
-            myClient.start();
-            myClient.addClientStateListener(this);
-            Serializer.registerClass(HelloMessage.class);
-            myClient.addMessageListener(new ClientListener(), HelloMessage.class);
-                
-            //Message message = new HelloMessage("Hello World!");
-            //myClient.send(message);
-            
-        
             bulletAppState = new BulletAppState();
             bulletAppState.setThreadingType(BulletAppState.ThreadingType.PARALLEL);
             stateManager.attach(bulletAppState);
-            w = 0;
 
             setupKeys();
             prepareBullet();
@@ -114,8 +106,20 @@ public class ClientMain extends SimpleApplication implements ClientStateListener
 
             Oil oil = new Oil(-170.0f, 17.1f, 28.0f, rootNode, bulletAppState, getAssetManager());
 
-            player = new Player(assetManager, bulletAppState, rootNode, 0);
+            player = new Player(assetManager, bulletAppState, rootNode, cam);
 
+            myClient = Network.connectToServer("localhost", 8000);
+            myClient.start();
+            myClient.addClientStateListener(this);
+            Serializer.registerClass(PlayerAlex.class);
+            Serializer.registerClass(HelloMessage.class);
+            clientListener = new ClientListener(this, bulletAppState, player);
+            myClient.addMessageListener(clientListener, HelloMessage.class);
+                
+            playerAlexs = new ArrayList<PlayerAlex>(1);
+            playerAlexs.add(new PlayerAlex(cam, player.ID));
+            message = new HelloMessage(playerAlexs);
+     
             enemy = new PlayerOnLine(-140, 15, 510, assetManager, bulletAppState, rootNode);
             enemys.add(enemy);
             enemy = new PlayerOnLine(-180, 15, 410, assetManager, bulletAppState, rootNode);
@@ -130,7 +134,8 @@ public class ClientMain extends SimpleApplication implements ClientStateListener
             enemys.add(enemy);
             enemy = new PlayerOnLine(-170, -135, 10, assetManager, bulletAppState, rootNode);
             enemys.add(enemy);
-
+          
+            alex = new PlayerAlex(cam, player.ID);
             setupChaseCamera();
             guiViseur = new GUI("Interface/viseur.png",
                     4 * settings.getWidth() / 9, 7 * settings.getHeight() / 19, 1 * settings.getWidth() / 9,
@@ -221,26 +226,59 @@ public class ClientMain extends SimpleApplication implements ClientStateListener
     @Override
     public void simpleUpdate(float tpf) {
         try {
-            myClient = Network.connectToServer("localhost", 8000);
-       
-        myClient.start();
-        myClient.addClientStateListener(this);
-        Serializer.registerClass(HelloMessage.class);
-        myClient.addMessageListener(new ClientListener(), HelloMessage.class);
+           playerAlexs.get(0).setCam(cam, player.ID);
+            message = (Message) new HelloMessage();
 
-//        Message message = new HelloMessage("Hello World!");
-  //      myClient.send(message);
-        } catch (IOException ex) {
+
+            System.out.println("::::::::   "+playerAlexs.size());
+            System.out.println("::::::::   "+playerAlexs.size());
+            System.out.println("::::::::   "+playerAlexs.size());
+            if(myClient.isConnected()){
+                myClient.send(message);
+            }
+            else{
+                 playerAlexs = new ArrayList<PlayerAlex>(1);
+                playerAlexs.add(new PlayerAlex(cam, player.ID));
+
+                myClient = Network.connectToServer("localhost", 8000);
+                myClient.start();
+                myClient.addClientStateListener(this);
+                Serializer.registerClass(PlayerAlex.class);
+                Serializer.registerClass(HelloMessage.class);
+                clientListener = new ClientListener(this, bulletAppState, player);
+                myClient.addMessageListener(clientListener, HelloMessage.class);
+            }
+        
+        } catch (Exception ex) {
             Logger.getLogger(ClientMain.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("---------   "+w+"  ------------");
             System.out.println("-------------------------------");
-            System.out.println("--------ERROR CLIEN%T---------");
-            System.out.println("--------ERROR CLIEN%T---------");
+            System.out.println("--------ERROR UPD---------");
+            System.out.println("--------ERROR UPD---------");
             System.out.println("-------------------------------");
+            try{
+            myClient = Network.connectToServer("localhost", 8000);
+            myClient.start();
+            myClient.addClientStateListener(this);
+            Serializer.registerClass(PlayerAlex.class);
+            Serializer.registerClass(HelloMessage.class);
+            clientListener = new ClientListener(this, bulletAppState, player);
+            myClient.addMessageListener(clientListener, HelloMessage.class);
+            }catch(IOException ioe){
+                System.out.println("CEST LA MERDE SI TU VOIS CA MEC");
+                System.out.println("CEST LA MERDE SI TU VOIS CA MEC");
+                System.out.println("CEST LA MERDE SI TU VOIS CA MEC");
+                System.out.println("CEST LA MERDE SI TU VOIS CA MEC");
+                System.out.println("CEST LA MERDE SI TU VOIS CA MEC");
+                System.out.println("CEST LA MERDE SI TU VOIS CA MEC");
+                System.out.println("CEST LA MERDE SI TU VOIS CA MEC");
+                System.out.println("CEST LA MERDE SI TU VOIS CA MEC");
+                System.out.println("CEST LA MERDE SI TU VOIS CA MEC");
+                System.out.println("CEST LA MERDE SI TU VOIS CA MEC");
+            }
         }
         
         if (null != cam && player.game) {
-            player.update(tpf, cam);
+            player.update(tpf);
         }
 
         Integer oilStocked = Math.round(player.fuelStocked / (player.MAXFUEL / 10));
@@ -256,7 +294,7 @@ public class ClientMain extends SimpleApplication implements ClientStateListener
         hudText.setText(Math.round(player.currentSpeed * 51) + " KM");
 
         time += tpf;
-        if (time > .3f) {
+        if (time > 5f) {
             X += time * 60;
             time = 0;
             // if(Math.random() < 0.3)
@@ -276,7 +314,7 @@ public class ClientMain extends SimpleApplication implements ClientStateListener
         guiRadarsPlayersPos.get(1).pic.setPosition((baseEnemy.oilCollision2.getPhysicsLocation().x - player.character.getPhysicsLocation().x) / 800 * 100 + radarPosX,
                 (baseEnemy.oilCollision2.getPhysicsLocation().z - player.character.getPhysicsLocation().z) / 800 * -100 + radarPosY);
 
-        w += 0.1f;
+        /*   w += 0.1f;
         // while ((float)Math.abs(guiRadarsPlayersPos.get(enemys.size() + 2).pic.getLocalRotation().getZ() - (cam.getRotation()).getZ()) < 0.1f  ) {
         System.out.println(Math.abs(guiRadarsPlayersPos.get(enemys.size() + 2).pic.getLocalRotation().getZ() - (cam.getRotation()).getZ()));
         if (guiRadarsPlayersPos.get(enemys.size() + 2).pic.getLocalRotation().getZ() > cam.getRotation().getZ()) {
@@ -284,7 +322,7 @@ public class ClientMain extends SimpleApplication implements ClientStateListener
         } else {
             guiRadarsPlayersPos.get(enemys.size() + 2).pic.setLocalRotation(new Quaternion(new float[]{0f, 0f, -(guiRadarsPlayersPos.get(enemys.size() + 2).pic.getLocalRotation().getZ() - (cam.getRotation()).getZ()) * FastMath.PI - 1 * (float) Math.cos(cam.getDirection().getZ() * FastMath.TWO_PI) + (float) Math.cos(cam.getDirection().getX() * FastMath.TWO_PI)}));
         }
-        w += 0.1f;
+        w += 0.1f;*/
 
 
 
