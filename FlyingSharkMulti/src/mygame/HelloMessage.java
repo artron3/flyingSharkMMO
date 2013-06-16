@@ -26,4 +26,12 @@ public class HelloMessage extends AbstractMessage {
       this.players = players2; 
   }
 
+    public ArrayList<PlayerAlex> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(ArrayList<PlayerAlex> players) {
+        this.players = players;
+    }
+
 }

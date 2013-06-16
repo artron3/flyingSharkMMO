@@ -50,8 +50,8 @@ public class ServerMain extends SimpleApplication implements ConnectionListener 
             System.out.println("started");
          myServer.addConnectionListener(this);
             System.out.println("connection listner addedd");
-            Serializer.registerClass(HelloMessage.class);
             Serializer.registerClass(PlayerAlex.class);
+            Serializer.registerClass(HelloMessage.class);
             System.out.println("classe serialized");
          myServer.addMessageListener(new ServerListener(), HelloMessage.class);
             
@@ -67,9 +67,11 @@ public class ServerMain extends SimpleApplication implements ConnectionListener 
         timeElapsed+=tpf;
         if(timeElapsed>0.48f){
             if(players != null){
+                if(players.size()>0){
                 Message msg = new HelloMessage(players);
                 myServer.broadcast(msg);
             }
+        }
             
             
             

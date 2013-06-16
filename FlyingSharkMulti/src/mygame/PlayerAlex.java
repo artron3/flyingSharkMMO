@@ -5,7 +5,6 @@ package mygame;
 import com.jme3.math.Vector3f;
 import com.jme3.network.AbstractMessage;
 import com.jme3.network.serializing.Serializable;
-import com.jme3.network.serializing.serializers.;
 import com.jme3.network.serializing.serializers.Vector3Serializer;
 import mygame.Faction;
 import java.net.Socket;
@@ -45,6 +44,9 @@ public class PlayerAlex extends AbstractMessage{
                     pos = new Vector3f(-140f + players.size() * 30, 5f, 10f);
                     faction =1;
                 }               
+            }else{
+                pos = new Vector3f(-140f, 5f, 10f);
+                faction = 0;
             }
         }
         
@@ -60,6 +62,54 @@ public void updatee (Vector3f posX, Vector3f dirX, ArrayList<Vector3f> bPos,
     this.bulletsDir = bDire;
     this.bulletsPos = bPos;
         
+    }
+
+    public int getFaction() {
+        return faction;
+    }
+
+    public void setFaction(int faction) {
+        this.faction = faction;
+    }
+
+    public Vector3f getPos() {
+        return pos;
+    }
+
+    public void setPos(Vector3f pos) {
+        this.pos = pos;
+    }
+
+    public Vector3f getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Vector3f direction) {
+        this.direction = direction;
+    }
+
+    public ArrayList<Vector3f> getBulletsPos() {
+        return bulletsPos;
+    }
+
+    public void setBulletsPos(ArrayList<Vector3f> bulletsPos) {
+        this.bulletsPos = bulletsPos;
+    }
+
+    public ArrayList<Vector3f> getBulletsDir() {
+        return bulletsDir;
+    }
+
+    public void setBulletsDir(ArrayList<Vector3f> bulletsDir) {
+        this.bulletsDir = bulletsDir;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
 

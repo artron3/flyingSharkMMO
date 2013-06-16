@@ -22,15 +22,15 @@ public class ClientListener implements MessageListener<Client> {
                 HelloMessage helloMessage = (HelloMessage) message;
                 System.out.println("----------------------------------------------------------------------");
                 System.out.println("----------------------------------------------------------------------");
-                System.out.println("-----------"+ helloMessage.toString()+ " ----------------");
+                System.out.println("-----------"+ helloMessage.toString()+ " ----------------");/*
                 System.out.println("-----------"+ helloMessage.players.toString()+ " ----------------");
                 System.out.println("-----------"+ helloMessage.players.get(0).toString()+ " ----------------");
                 System.out.println("-----------"+ helloMessage.players.get(0).id.toString()+ " ----------------");
                 System.out.println("----------------------------------------------------------------------");
-                System.out.println("----------------------------------------------------------------------");
+                System.out.println("----------------------------------------------------------------------");*/
                 
                 //      System.out.println("Client #"+source.getId()+" received: '"+helloMessage.players.size() +"'");
-                System.out.println("Client #"+source.getId()+" received: '"+helloMessage.players.get(helloMessage.players.size()-1).faction +"'");
+                //System.out.println("Client #"+source.getId()+" received: '"+helloMessage.players.get(helloMessage.players.size()-1).faction +"'");
             }
         } catch (Exception ex) {
             System.out.println(getClass().getName()+"  uuuuuuuuuu   "+ ex.toString());
